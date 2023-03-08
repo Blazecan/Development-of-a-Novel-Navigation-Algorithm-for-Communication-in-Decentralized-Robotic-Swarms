@@ -7,8 +7,11 @@
 
 Romi32U4Motors motors;
 Romi32U4ButtonA buttonA;
-int speed = 0;
-
+int speedLeft = 0;
+int speedRight = 0;
+void updateMotors(){
+  motors.setSpeeds(speedLeft, speedRight);
+}
 
 void setup() {
 
@@ -20,25 +23,23 @@ void setup() {
 void loop() {
   while (Serial1.available() > 0) {
     char receivedData = Serial1.read();   // read one byte from serial buffer and save to receivedData
-    if (receivedData == '1' && speed < 400) {
+    if (receivedData == '1' && speedRight < 400 && speedLeft < 400) {
       //Serial.println("ON");
-      speed+=10;
-      ledGreen(0);
-      ledYellow(1);
-      motors.setSpeeds(speed, speed);
+      speedLeft+=10;
+      speedRight+=10;
     }
-    else if (receivedData == '2' && speed > -400) {
+    else if (receivedData == '2' && speedRight > -400 && speedLeft > -400) {
       //Serial.println("OFF");
-      speed-=10;
-      ledGreen(0);
-      ledRed(1);
-      motors.setSpeeds(speed, speed);
+      speedLeft-=10;
+      speedRight -=10;
     }
-    else{
-      ledRed(0);
-      ledYellow(0);
-      ledGreen(1);
+    else if (receivedData == '3' && speedLeft < 400){
+      speedLeft += 10;
     }
+    else if(receivedData == '4' && speedRight < 400){
+      speedRight +=10;
+    }
+    updateMotors();
   }
-  delay(5);
+  delay(15);
 }
